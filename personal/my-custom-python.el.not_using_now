@@ -1,0 +1,26 @@
+(require 'lpy)
+
+(setq python-shell-prompt-detect-enabled nil)
+(require 'warnings)
+(add-to-list 'warning-suppress-log-types
+             '(python python-shell-completion-native-turn-on-maybe))
+(setq python-shell-prompt-detect-failure-warning nil)
+;; when set to nil, completions to functions end with "(", very annoying
+(setq python-shell-completion-native-enable t)
+(define-key python-mode-map (kbd "C-.") nil)
+(define-key python-mode-map (kbd "C-x C-p") 'jedi:goto-definition)
+(define-key python-mode-map (kbd "C-?") 'jedi:show-doc)
+(define-key python-mode-map (kbd "RET") 'newline-and-indent)
+(define-key python-mode-map (kbd "C-c C-l") 'ora-python-send)
+(define-key python-mode-map (kbd "θ") 'lpy-quotes)
+(define-key python-mode-map (kbd "β") 'counsel-jedi)
+(define-key python-mode-map (kbd "C-M-j") 'lpy-goto)
+(define-key python-mode-map (kbd "C-c C-v") nil)
+(define-key python-mode-map (kbd "C-c C-r") nil)
+(define-key python-mode-map (kbd "C-m") 'newline)
+(define-key inferior-python-mode-map (kbd "C-c M-o") 'comint-clear-buffer)
+
+(require 'le-python)
+(require 'flyspell)
+(flyspell-delay-command 'python-indent-dedent-line-backspace)
+(require 'company-jedi)

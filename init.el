@@ -165,4 +165,6 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
  ;; greet the use with some useful tip
  (run-at-time 5 nil 'prelude-tip-of-the-day))
 
+(add-hook 'c-mode-hook 'ggtags-mode)
+
 ;;; init.el ends here
