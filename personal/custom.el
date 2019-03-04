@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
+    (git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -38,7 +38,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; install additional packages - add anyto this list that you want to
 ;; be installed automatically
-(prelude-require-packages '(multiple-cursors ess use-package eyebrowse lsp-mode lsp-ui company-lsp lsp-python pyvenv pipenv ivy lsp-java dap-mode))
+(prelude-require-packages '(multiple-cursors ess use-package eyebrowse lsp-mode lsp-ui company-lsp lsp-python pyvenv pipenv ivy lsp-java dap-mode wiki-summary paradox all-the-icons all-the-icons-dired webpaste ccls cmake-mode cmake-font-lock cmake-ide git-gutter))
 
 ;;Enable arrow keys
 (setq prelude-guru nil)
@@ -143,15 +143,17 @@
 (setq jiralib-url "https://datoscloud.atlassian.net/")
 ;;)
 
-(defun cquery//enable ()
-(condition-case nil
-    (lsp)
-  (user-error nil)))
 
-(use-package cquery
-    :commands lsp
-    :init (add-hook 'c-mode-hook #'cquery//enable)
-    (add-hook 'c++-mode-hook #'cquery//enable))
+;; ;; C++ setup using cquery
+;; (defun cquery//enable ()
+;; (condition-case nil
+;;     (lsp)
+;;   (user-error nil)))
+
+;; (use-package cquery
+;;     :commands lsp
+;;     :init (add-hook 'c-mode-hook #'cquery//enable)
+;;     (add-hook 'c++-mode-hook #'cquery//enable))
 
 
 (use-package projectile :ensure t)
@@ -164,6 +166,51 @@
 (use-package lsp-java :ensure t :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
 
+;; C++ using ccls
+(use-package ccls
+  :after projectile
+;;  :ensure-system-package ccls
+  :custom
+  (ccls-args nil)
+  (ccls-executable (executable-find "ccls"))
+  (projectile-project-root-files-top-down-recurring
+   (append '("compile_commands.json" ".ccls")
+           projectile-project-root-files-top-down-recurring))
+  :config (push ".ccls-cache" projectile-globally-ignored-directories))
+
+;; Cmake modes
+
+(use-package cmake-mode
+  :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'"))
+
+(use-package cmake-font-lock
+  :after (cmake-mode)
+  :hook (cmake-mode . cmake-font-lock-activate))
+
+(use-package cmake-ide
+  :after projectile
+  :hook (c++-mode . my/cmake-ide-find-project)
+  :preface
+  (defun my/cmake-ide-find-project ()
+    "Finds the directory of the project for cmake-ide."
+    (with-eval-after-load 'projectile
+      (setq cmake-ide-project-dir (projectile-project-root))
+      (setq cmake-ide-build-dir (concat cmake-ide-project-dir "build")))
+    (setq cmake-ide-compile-command (concat "cd " cmake-ide-build-dir " && make"))
+    (cmake-ide-load-db))
+
+  (defun my/switch-to-compilation-window ()
+    "Switches to the *compilation* buffer after compilation."
+    (other-window 1))
+  :bind ([remap comment-region] . cmake-ide-compile)
+  :init (cmake-ide-setup)
+  :config (advice-add 'cmake-ide-compile :after #'my/switch-to-compilation-window))
+
+;; Google coding style
+(use-package google-c-style
+  :hook ((c-mode c++-mode) . google-set-c-style)
+  (c-mode-common . google-make-newline-indent))
+
 (use-package dap-mode
   :ensure t :after lsp-mode
   :config
@@ -175,3 +222,53 @@
 
 ;; (require 'lsp-java)
 ;; (add-hook 'java-mode-hook #'lsp)
+
+
+;; Gives a wikipedia summary of the topic
+(use-package wiki-summary
+  :defer 1
+  :bind ("C-c W" . wiki-summary)
+  :preface
+  (defun my/format-summary-in-buffer (summary)
+    "Given a summary, stick it in the *wiki-summary* buffer and display the buffer"
+    (let ((buf (generate-new-buffer "*wiki-summary*")))
+      (with-current-buffer buf
+        (princ summary buf)
+        (fill-paragraph)
+        (goto-char (point-min))
+        (text-mode)
+        (view-mode))
+      (pop-to-buffer buf))))
+
+(advice-add 'wiki-summary/format-summary-in-buffer :override #'my/format-summary-in-buffer)
+
+
+
+;; Give additional information about the package, may be slow
+(use-package paradox
+  :defer 1
+  :custom
+  (paradox-column-width-package 27)
+  (paradox-column-width-version 13)
+  (paradox-execute-asynchronously t)
+  (paradox-hide-wiki-packages t)
+  :config
+  (paradox-enable)
+  (remove-hook 'paradox-after-execute-functions #'paradox--report-buffer-print))
+
+
+;;Font icons
+(use-package all-the-icons :defer 0.5)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
+
+;;webpaste
+(use-package webpaste
+  :bind (("C-c C-p C-b" . webpaste-paste-buffer)
+         ("C-c C-p C-r" . webpaste-paste-region)))
+
+
+(use-package git-gutter
+  :defer 0.3
+  :diminish
+  :init (global-git-gutter-mode +1))
