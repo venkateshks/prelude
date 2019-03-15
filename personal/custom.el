@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
+    (scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -38,7 +38,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; install additional packages - add anyto this list that you want to
 ;; be installed automatically
-(prelude-require-packages '(multiple-cursors ess use-package eyebrowse lsp-mode lsp-ui company-lsp lsp-python pyvenv pipenv ivy lsp-java dap-mode wiki-summary paradox all-the-icons all-the-icons-dired webpaste ccls cmake-mode cmake-font-lock cmake-ide git-gutter))
+(prelude-require-packages '(multiple-cursors ess use-package eyebrowse lsp-mode lsp-ui company-lsp lsp-python pyvenv pipenv ivy lsp-java dap-mode wiki-summary paradox all-the-icons all-the-icons-dired webpaste ccls cmake-mode cmake-font-lock cmake-ide git-gutter transient))
 
 ;;Enable arrow keys
 (setq prelude-guru nil)
