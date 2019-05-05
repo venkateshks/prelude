@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
+    (ensime elfeed jupyter ein ob-ipython google-c-style scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -38,7 +38,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; install additional packages - add anyto this list that you want to
 ;; be installed automatically
-(prelude-require-packages '(multiple-cursors ess use-package eyebrowse lsp-mode lsp-ui company-lsp lsp-python pyvenv pipenv ivy lsp-java dap-mode wiki-summary paradox all-the-icons all-the-icons-dired webpaste ccls cmake-mode cmake-font-lock cmake-ide git-gutter transient))
+(prelude-require-packages '(multiple-cursors ess use-package eyebrowse lsp-mode lsp-ui company-lsp lsp-python pyvenv pipenv ivy lsp-java dap-mode wiki-summary paradox all-the-icons all-the-icons-dired webpaste ccls cmake-mode cmake-font-lock cmake-ide git-gutter transient google-c-style ccls ob-ipython ein jupyter elfeed ensime))
 
 ;;Enable arrow keys
 (setq prelude-guru nil)
@@ -169,7 +169,8 @@
 ;; C++ using ccls
 (use-package ccls
   :after projectile
-;;  :ensure-system-package ccls
+  ;;  :ensure-system-package ccls
+  :hook ((c-mode c++-mode) . lsp)
   :custom
   (ccls-args nil)
   (ccls-executable (executable-find "ccls"))
@@ -180,31 +181,31 @@
 
 ;; Cmake modes
 
-(use-package cmake-mode
-  :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'"))
+;; (use-package cmake-mode
+;;   :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'"))
 
-(use-package cmake-font-lock
-  :after (cmake-mode)
-  :hook (cmake-mode . cmake-font-lock-activate))
+;; (use-package cmake-font-lock
+;;   :after (cmake-mode)
+;;   :hook (cmake-mode . cmake-font-lock-activate))
 
-(use-package cmake-ide
-  :after projectile
-  :hook (c++-mode . my/cmake-ide-find-project)
-  :preface
-  (defun my/cmake-ide-find-project ()
-    "Finds the directory of the project for cmake-ide."
-    (with-eval-after-load 'projectile
-      (setq cmake-ide-project-dir (projectile-project-root))
-      (setq cmake-ide-build-dir (concat cmake-ide-project-dir "build")))
-    (setq cmake-ide-compile-command (concat "cd " cmake-ide-build-dir " && make"))
-    (cmake-ide-load-db))
+;; (use-package cmake-ide
+;;   :after projectile
+;;   :hook (c++-mode . my/cmake-ide-find-project)
+;;   :preface
+;;   (defun my/cmake-ide-find-project ()
+;;     "Finds the directory of the project for cmake-ide."
+;;     (with-eval-after-load 'projectile
+;;       (setq cmake-ide-project-dir (projectile-project-root))
+;;       (setq cmake-ide-build-dir (concat cmake-ide-project-dir "build")))
+;;     (setq cmake-ide-compile-command (concat "cd " cmake-ide-build-dir " && make"))
+;;     (cmake-ide-load-db))
 
-  (defun my/switch-to-compilation-window ()
-    "Switches to the *compilation* buffer after compilation."
-    (other-window 1))
-  :bind ([remap comment-region] . cmake-ide-compile)
-  :init (cmake-ide-setup)
-  :config (advice-add 'cmake-ide-compile :after #'my/switch-to-compilation-window))
+;;   (defun my/switch-to-compilation-window ()
+;;     "Switches to the *compilation* buffer after compilation."
+;;     (other-window 1))
+;;   :bind ([remap comment-region] . cmake-ide-compile)
+;;   :init (cmake-ide-setup)
+;;   :config (advice-add 'cmake-ide-compile :after #'my/switch-to-compilation-window))
 
 ;; Google coding style
 (use-package google-c-style
@@ -272,3 +273,102 @@
   :defer 0.3
   :diminish
   :init (global-git-gutter-mode +1))
+
+
+;; babel
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((shell . t)
+                             (python . t)
+                             (ipython . t)
+                             ))
+
+
+;; From https://github.com/seagle0128/.emacs.d/blob/master/lisp/init-elfeed.el
+
+(use-package elfeed
+  :bind (("C-x w" . elfeed)
+         :map elfeed-show-mode-map
+         ("o" . ace-link)
+         ("q" . delete-window))
+  :config
+  (setq elfeed-db-directory (locate-user-emacs-file ".elfeed")
+        elfeed-show-entry-switch #'pop-to-buffer
+        elfeed-show-entry-delete #'delete-window)
+
+  (setq elfeed-feeds
+        '(("http://planet.emacsen.org/atom.xml" emacs blog)
+          ("http://www.masteringemacs.org/feed/" emacs blog)
+          ("https://oremacs.com/atom.xml" emacs blog)
+          ("https://pinecast.com/feed/emacscast" emacs blog)
+          ("https://www.reddit.com/r/emacs.rss" emacs reddit)
+          ("https://www.reddit.com/r/clojure.rss" clojure reddit)
+          ("https://nullprogram.com/feed/" dev blog)
+          ("https://blog.digitalocean.com/rss/" dev cloud blog)
+          ("http://irreal.org/blog/?feed=rss2" emacs blog)
+          ("https://www.joelonsoftware.com/feed/" dev blog)
+          ("https://mortoray.com/feed/" dev blog)
+          ("https://eng.uber.com/feed/" dev blog)
+          ("https://nickdesaulniers.github.io/atom.xml" dev blog)
+          ("http://sachachua.com/blog/category/emacs/feed/" emacs blog)
+          ("https://fgiesen.wordpress.com/feed/" dev blog)
+          ("https://arthurcaillau.com/feed.xml" dev blog)
+          ("http://gigasquidsoftware.com/atom.xml" ai dev blog)
+          ("https://devblogs.nvidia.com/feed/" dev ai blog)
+          ("https://devblogs.nvidia.com/gpu-containers-runtime/feed/" dev ai blog)
+          ("http://feeds.feedburner.com/thoughtsfromtheredplanet?format=xml" clojure dev blog)
+          ("http://cdixon.org/feed/" startups blog)
+          ("https://feld.com/feed" startups blog)
+          ("http://feeds.feedburner.com/avc" startups blog)
+          ("https://a16z.com/feed/" startups blog)
+          ("https://www.ben-evans.com/benedictevans?format=RSS" startups blog)
+          ("https://bothsidesofthetable.com/feed" startups blog)
+          ("https://medium.com/feed/@paraschopra" startups blog)
+          ("https://www.forentrepreneurs.com/feed/" startups blog)
+          ("https://tomtunguz.com/index.xml" startups blog)
+          ("https://www.saastr.com/feed/" startups blog)))
+
+
+  (defhydra elfeed-hydra (:color pink :hint nil)
+    "
+^Search^                   ^Filter^                 ^Article^
+^^-------------------------^^-----------------------^^--------------------
+_g_: Refresh               _s_: Live filter         _b_: Browse
+_G_: Update                _S_: Set filter          _n_/_C-n_: Next
+_y_: Copy URL              _*_: Starred             _p_/_C-p_: Previous
+_+_: Tag all               _A_: All                 _u_: Mark read
+_-_: Untag all             _T_: Today               _r_: Mark unread
+"
+    ("G" elfeed-search-fetch)
+    ("Q" elfeed-search-quit-window "Quit Elfeed" :exit t)
+    ("S" elfeed-search-set-filter)
+    ("A" (elfeed-search-set-filter "@6-months-ago"))
+    ("T" (elfeed-search-set-filter "@1-day-ago"))
+    ("*" (elfeed-search-set-filter "@6-months-ago +star"))
+    ("+" elfeed-search-tag-all)
+    ("-" elfeed-search-untag-all)
+    ("b" elfeed-search-browse-url)
+    ("g" elfeed-search-update--force)
+    ("n" next-line)
+    ("C-n" next-line)
+    ("p" previous-line)
+    ("C-p" previous-line)
+    ("r" elfeed-search-untag-all-unread)
+    ("s" elfeed-search-live-filter)
+    ("u" elfeed-search-tag-all-unread)
+    ("y" elfeed-search-yank)
+    ("RET" elfeed-search-show-entry)
+    ("q" nil "quit" :exit t)
+    ("C-g" nil "quit" :exit t))
+  (bind-keys :map elfeed-search-mode-map
+             ("h" . elfeed-hydra/body)
+             ("?" . elfeed-hydra/body)))
+
+
+;; Scala
+
+(use-package ensime
+  :ensure t
+  :pin melpa-stable
+(setq )
+  )
