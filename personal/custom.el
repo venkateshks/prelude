@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ensime elfeed jupyter ein ob-ipython google-c-style scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
+    (ensime elfeed jupyter ein ob-ipython google-c-style scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window paradox))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -326,7 +326,15 @@
           ("https://medium.com/feed/@paraschopra" startups blog)
           ("https://www.forentrepreneurs.com/feed/" startups blog)
           ("https://tomtunguz.com/index.xml" startups blog)
-          ("https://www.saastr.com/feed/" startups blog)))
+          ("https://www.saastr.com/feed/" startups blog)
+          ("https://landing.ai/feed/" startups ai)
+          ("http://blog.qure.ai/feed.xml" startups ai healthcare)
+          ("https://www.run.ai/feed/" startups ai)
+          ("https://medium.com/feed/embleema" startups blockchain)
+          ("https://www.merantix.com/feed/" startups ai healthcare)
+          ("https://zebramedblog.wordpress.com/feed/" startups ai healthcare)
+          ("https://sigtuple.com/feed/" startups ai healthcare)
+          ("https://rafay.co/feed/" startups blog)))
 
 
   (defhydra elfeed-hydra (:color pink :hint nil)
@@ -363,12 +371,3 @@ _-_: Untag all             _T_: Today               _r_: Mark unread
   (bind-keys :map elfeed-search-mode-map
              ("h" . elfeed-hydra/body)
              ("?" . elfeed-hydra/body)))
-
-
-;; Scala
-
-(use-package ensime
-  :ensure t
-  :pin melpa-stable
-(setq )
-  )
