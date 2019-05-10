@@ -294,7 +294,8 @@
   :config
   (setq elfeed-db-directory (locate-user-emacs-file ".elfeed")
         elfeed-show-entry-switch #'pop-to-buffer
-        elfeed-show-entry-delete #'delete-window)
+        elfeed-show-entry-delete #'delete-window
+        url-queue-timeout 30)
 
   (setq elfeed-feeds
         '(("http://planet.emacsen.org/atom.xml" emacs blog)
@@ -346,6 +347,7 @@ _G_: Update                _S_: Set filter          _n_/_C-n_: Next
 _y_: Copy URL              _*_: Starred             _p_/_C-p_: Previous
 _+_: Tag all               _A_: All                 _u_: Mark read
 _-_: Untag all             _T_: Today               _r_: Mark unread
+_R_: Non reddit            _H_: Stuff               _B_: Blogs
 "
     ("G" elfeed-search-fetch)
     ("Q" elfeed-search-quit-window "Quit Elfeed" :exit t)
@@ -353,6 +355,9 @@ _-_: Untag all             _T_: Today               _r_: Mark unread
     ("A" (elfeed-search-set-filter "@6-months-ago"))
     ("T" (elfeed-search-set-filter "@1-day-ago"))
     ("*" (elfeed-search-set-filter "@6-months-ago +star"))
+    ("H" (elfeed-search-set-filter "+ai +healthcare"))
+    ("B" (elfeed-search-set-filter "+blog"))
+    ("R" (elfeed-search-set-filter "-reddit"))
     ("+" elfeed-search-tag-all)
     ("-" elfeed-search-untag-all)
     ("b" elfeed-search-browse-url)
