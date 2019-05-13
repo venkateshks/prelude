@@ -335,7 +335,8 @@
           ("https://www.merantix.com/feed/" startups ai healthcare)
           ("https://zebramedblog.wordpress.com/feed/" startups ai healthcare)
           ("https://sigtuple.com/feed/" startups ai healthcare)
-          ("https://rafay.co/feed/" startups blog)))
+          ("https://rafay.co/feed/" startups blog)
+          ("https://news.ycombinator.com/rss" startups blog)))
 
 
   (defhydra elfeed-hydra (:color pink :hint nil)
