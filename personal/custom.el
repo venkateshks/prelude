@@ -5,7 +5,10 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (emms ensime elfeed jupyter ein ob-ipython google-c-style scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window))))
+    (google-contacts smtpmail-multi emms ensime elfeed jupyter ein ob-ipython google-c-style scala-mode transient git-gutter cmake-ide cmake-font-lock cmake-mode ccls webpaste all-the-icons-dired all-the-icons paradox wiki-summary thrift dap-java cquery multiple-cursors org-jira treemacs dap-mode lsp-java pyvenv lsp-python company-lsp lsp-ui lsp-mode pipenv use-package ess eyebrowse vlf tabbar-ruler tabbar company-jedi lispy ggtags imenu-list yaml-mode web-mode cider clojure-mode helm-ag helm-descbinds key-chord helm-projectile helm anaconda-mode ripgrep markdown-mode exec-path-from-shell zop-to-char zenburn-theme which-key volatile-highlights undo-tree smartrep smartparens smart-mode-line operate-on-number move-text magit projectile imenu-anywhere hl-todo guru-mode grizzl god-mode gitignore-mode gitconfig-mode git-timemachine gist flycheck expand-region epl editorconfig easy-kill diminish diff-hl discover-my-major crux browse-kill-ring beacon anzu ace-window)))
+ '(send-mail-function (quote smtpmail-send-it))
+ '(smtpmail-smtp-server "smtp.gmail.com")
+ '(smtpmail-smtp-service 25))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -337,6 +340,7 @@
           ("https://sigtuple.com/feed/" startups ai healthcare)
           ("https://rafay.co/feed/" startups blog)
           ("https://news.ycombinator.com/rss" startups blog)
+          ("https://lars.ingebrigtsen.no/feed/" emacs blog)
           ("https://www.youtube.com/feeds/videos.xml?channel_id=UChvithwOECK5g_19TjldMKw" youtube)
           ("https://www.youtube.com/feeds/videos.xml?channel_id=UCZPqG0yh_xPm2AyLjffbDvw" youtube)
           ("https://www.youtube.com/feeds/videos.xml?channel_id=UCstt9_SJ74c5fEOICaUUlrA" youtube)

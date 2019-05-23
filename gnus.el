@@ -2,9 +2,12 @@
 
 ;; You need this to be able to list all labels in gmail
 (setq gnus-ignored-newsgroups "")
+(setq gnus-activate-level 2)
 
 ;; @see http://www.emacswiki.org/emacs/GnusGmail#toc1
-(setq gnus-select-method '(nntp "news.gmane.org")) ;; if you read news groups
+;;(setq gnus-select-method '(nntp "news.gmane.org")) ;; if you read news groups
+(setq gnus-select-method
+      '(nnnil ""))
 
 ;; ask encryption password once
 (setq epa-file-cache-passphrase-for-symmetric-encryption t)
@@ -16,7 +19,7 @@
                       (nnimap-server-port 993)
                       (nnimap-stream ssl)
                       (nnir-search-engine imap)
-;;                      (nnimap-authinfo-file "~/.authinfo.gpg")
+                      (nnimap-authinfo-file "~/.authinfo.gpg")
                       ; @see http://www.gnu.org/software/emacs/manual/html_node/gnus/Expiring-Mail.html
                       ;; press 'E' to expire email
                       (nnmail-expiry-target "nnimap+gmail1:[Gmail]/Trash")
@@ -28,7 +31,7 @@
                       (nnimap-address "imap.gmail.com")
                       (nnimap-server-port 993)
                       (nnimap-stream ssl)
-;;                      (nnimap-authinfo-file "~/.authinfo.gpg")
+                     (nnimap-authinfo-file "~/.authinfo.gpg")
                       (nnir-search-engine imap)
                       (nnmail-expiry-target "nnimap+gmail2:[Gmail]/Trash")
                       (nnmail-expiry-wait 90)))
@@ -82,30 +85,43 @@
 (setq gnus-thread-ignore-subject t)
 
 ;; Personal Information
-(setq user-full-name "Venkatesh Sharma"
-      user-mail-address "venkatesh.ks@gmail.com")
+(setq user-full-name (rot13 "Iraxngrfu Funezn")
+      user-mail-address (rot13 "iraxngrfu.xf@tznvy.pbz"))
 
-;; Read HTML mail:
-;; You need install the command line web browser 'w3m' and Emacs plugin 'w3m'
-;; manually. It specify the html render as w3m so my setup works on all versions
-;; of Emacs.
-;;
-;; Since Emacs 24+, a default html rendering engine `shr' is provided:
-;;   - It works out of box without any cli program dependency or setup
-;;   - It can render html color
-;; So below line is optional.
-;; (setq mm-text-html-renderer 'w3m) ; OPTIONAL
 
-;; Send email through SMTP
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      )
+;; ;; ;; Send email through SMTP
+;; (setq message-send-mail-function 'smtpmail-send-it
+;;       smtpmail-default-smtp-server "smtp.gmail.com"
+;;       smtpmail-smtp-service 587
+;;       smtpmail-auth-credentials (expand-file-name "~/.authinfo.gpg")
+;;       )
+
+;; (defun bst-change-smtp ()
+;;   "Change the SMTP server according to the current from line."
+;;   (save-excursion
+;;     (save-restriction
+;;       (message-narrow-to-headers)
+;;       (let* ((from (message-fetch-field "from"))
+;;              (from-first (string-match (rot13 "iraxngrfu.xf@tznvy.pbz") from))
+;;              (from-second (string-match (rot13 "ernpuxfi@tznvy.pbz") from)))
+;;         (setq smtpmail-smtp-service (if from-first 587 smtpmail-smtp-service) ; the SMTP port at work is different
+;;               smtpmail-smtp-server (if from-first
+;;                                        "smtp.gmail.com"                ; the SMTP server at work
+;;                                      smtpmail-default-smtp-server)              ; the SMTP server otherwise
+;;               smtpmail-stream-type 'starttls
+;;               smtpmail-default-smtp-server smtpmail-smtp-server)
+;;         (message-remove-header "X-Message-SMTP-Method")))))
+
+;; (add-hook 'message-send-hook 'bst-change-smtp)
+
+
+
 
 ;; sending mail
 (setq message-send-mail-function 'message-send-mail-with-sendmail
       sendmail-program "/usr/local/bin/msmtp"
-      user-full-name "Venkatesh Sharma")
+      user-full-name "Venkatesh K S")
+
 
 ;; Borrowed from http://ionrock.org/emacs-email-and-mu.html
 ;; Choose account label to feed msmtp -a option based on From header
@@ -122,20 +138,27 @@
                          (message-fetch-field "from")) ""))
              (cc (or (save-restriction
                        (message-narrow-to-headers)
-                       (message-fetch-field "cc")) ""))
+                       (message-fetch-field "gcc")) ""))
              (account
               (cond
-               ((or (string-match "@insieve.com" from)
-                    (string-match "@insieve.com" cc)) "insieve")
-               ((or (string-match "@dhiti.com" from)
-                    (string-match "@dhiti.com" cc)) "dhiti")
-               (t "gmail"))))
+               ((or (string-match (rot13 "iraxngrfu.xf@tznvy.pbz") from)
+                    (string-match  "asjndshs977sduyttysdsyds" cc)) "gmail1")
+               ((string-match (rot13 "ernpuxfi@tznvy.pbz") from) "gmail2")
+               )))
           (setq message-sendmail-extra-arguments (list '"-a" account))))))
 (setq message-sendmail-envelope-from 'header)
 (add-hook 'message-send-mail-hook 'choose-msmtp-account)
 
+;; Need to tell msmtp which account we're using
+(setq message-sendmail-extra-arguments '("--read-envelope-from"))
+(setq message-sendmail-f-is-evil 't)
+
+
+
+
 ;; http://www.gnu.org/software/emacs/manual/html_node/gnus/_005b9_002e2_005d.html
 (setq gnus-use-correct-string-widths nil)
+
 
 ;; Sample on how to organize mail folders.
 ;; It's dependent on `gnus-topic-mode'.
@@ -150,34 +173,135 @@
      ;; "Gnus" is the root folder, and there are three mail accounts, "misc", "hotmail", "gmail"
      (setq gnus-topic-topology '(("Gnus" visible)
                                  (("misc" visible))
-                                 (("gmail2" visible nil nil))
-                                 (("gmail1" visible nil nil))))
+                                 (("gmail1" visible))
+                                 (("gmail2" visible))
+                                 ))
 
-     ;; ;; each topic corresponds to a public imap folder
-     ;; (setq gnus-topic-alist '(("gmail1" ; the key of topic
-     ;;                           "INBOX"
-     ;;                           "[Gmail]/Sent Mail"
-     ;;                           "[Gmail]/Trash"
-     ;;                           "Sent Messages"
-     ;;                           "Drafts")
-     ;;                          ("gmail2" ; the key of topic
-     ;;                           "INBOX"
-     ;;                           "[Gmail]/Sent Mail"
-     ;;                           "[Gmail]/Trash"
-     ;;                           "Sent Messages"
-     ;;                           "Drafts")
-     ;;                          ("Gnus")))
+     ;; each topic corresponds to a public imap folder
+     (setq gnus-topic-alist '(("gmail1" ; the key of topic
+                               "nnimap+gmail1:INBOX"
+                               "nnimap+gmail1:[Gmail]/Sent Mail"
+                               "nnimap+gmail1:[Gmail]/Trash"
+                               "nnimap+gmail1:Sent Messages"
+                               "nnimap+gmail1:Drafts")
+                              ("gmail2" ; the key of topic
+                               "nnimap+gmail2:INBOX"
+                               "nnimap+gmail2:[Gmail]/Sent Mail"
+                               "nnimap+gmail2:[Gmail]/Trash"
+                               "nnimap+gmail2:Sent Messages"
+                               "nnimap+gmail2:Drafts")
+                              ("misc"
+                               "nnimap+gmail1:Clojure")
+                              ("Gnus")))
      ))
 
 (setq gnus-posting-styles
       '(("gmail1:INBOX"
-         (name "Venkatesh Sharma")
-         (address "venkatesh.ks@gmail.com")
-         ("X-Message-SMTP-Method" "smtp smtp.gmail.com 587 venkatesh.ks@gmail.command"))
+         (name (rot13 "Iraxngrfu Funezn"))
+         (address (rot13 "iraxngrfu.xf@tznvy.pbz"))
+         ("X-Message-SMTP-Method" (rot13 "fzgc fzgc.tznvy.pbz 587 iraxngrfu.xf@tznvy.pbz")))
         ("gmail2:INBOX"
-         (address "reachksv@gmail.com")
-         (name "Venkatesh Sharma")
-         ("X-Message-SMTP-Method" "smtp smtp.gmail.com 587 reachksv@gmail.com"))))
+         (address (rot13 "ernpuxfi@tznvy.pbz"))
+         (name (rot13 "Iraxngrfu Funezn"))
+         ("X-Message-SMTP-Method" (rot13 "fzgc fzgc.tznvy.pbz 587 ernpuxfi@tznvy.pbz")))))
+
+;; (setq smtpmail-smtp-server "smtp.gmail.com"
+;;       smtpmail-smtp-service 587
+;;       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+
+
+(setq gnus-parameters
+      '(("nnimap gmail1:INBOX"
+         (display . all)
+         (posting-style
+          (name (rot13 "Iraxngrfu Funezn"))
+          (address (rot13 "iraxngrfu.xf@tznvy.pbz"))
+          (eval (setq message-sendmail-extra-arguments '("-a" "primary")))
+          (organization "")
+          (user-mail-address (rot13 "iraxngrfu.xf@tznvy.pbz"))
+          ;; (signature-file "~/.signature-work")
+          )
+         (expiry-wait . never)
+         (expiry-target . delete))
+
+        ("nnimap gmail2:[Gmail]/.*"
+         (display . all)
+         (posting-style
+          (name (rot13 "Iraxngrfu Funezn"))
+          (address (rot13 "ernpuxfi@tznvy.pbz"))
+          ;; (organization "My Employer")
+          ;; (signature-file "~/.signature-work")
+          )
+         (expiry-wait . never)
+         (expiry-target . delete)
+         )
+        ;; ("nnimap home:(INBOX|lists..*)"
+        ;;  (display . all)
+        ;;  (posting-style
+        ;;   (name "Deon Garrett")
+        ;;   (address "me@myhomeaddress.com")
+        ;;   (signature-file "~/.signature-home"))
+        ;;  (expiry-target . delete)
+        ;; ("nnimap home:[Gmail]/.*"
+        ;;  (display . all)
+        ;;  (posting-style
+        ;;   (name "Deon Garrett")
+        ;;   (address "me@myhomeaddress.com")
+        ;;   (signature-file "~/.signature-home"))
+        ;;  (expiry-wait . never)))
+        ))
+
+
+
+(when window-system
+  (setq gnus-sum-thread-tree-indent "  ")
+  (setq gnus-sum-thread-tree-root "● ")
+  (setq gnus-sum-thread-tree-false-root "◯ ")
+  (setq gnus-sum-thread-tree-single-indent "◎ ")
+  (setq gnus-sum-thread-tree-vertical        "│")
+  (setq gnus-sum-thread-tree-leaf-with-other "├─► ")
+  (setq gnus-sum-thread-tree-single-leaf     "╰─► "))
+(setq gnus-summary-line-format
+      (concat
+       "%0{%U%R%z%}"
+       "%3{│%}" "%1{%d%}" "%3{│%}" ;; date
+       "  "
+       "%4{%-20,20f%}"               ;; name
+       "  "
+       "%3{│%}"
+       " "
+       "%1{%B%}"
+       "%s\n"))
+(setq gnus-summary-display-arrow t)
+
+(gnus-add-configuration
+ '(article
+   (horizontal 1.0
+               (vertical 33 (group 1.0))
+               (vertical 1.0
+                         (summary 0.20 point)
+                         (article 1.0)))))
+
+(gnus-add-configuration
+ '(summary
+   (horizontal 1.0
+               (vertical 33 (group 1.0))
+               (vertical 1.0 (summary 1.0 point)))))
+
+
+
+;; From https://github.com/dbjergaard/dotfiles/blob/698069a65b0cb88fd98a30fd2271c0bc129141ea/gnus
+(add-hook 'message-mode-hook 'orgstruct++-mode 'append)
+(add-hook 'message-mode-hook 'turn-on-auto-fill 'append)
+(add-hook 'message-mode-hook 'orgtbl-mode 'append)
+(add-hook 'message-mode-hook 'turn-on-flyspell 'append)
+(add-hook 'message-mode-hook
+          '(lambda () (setq fill-column 72))
+          'append)
+(add-hook 'message-mode-hook
+          '(lambda () (local-set-key (kbd "C-c M-o") 'org-mime-htmlize))
+          'append)
+
 
 ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
 ;; gnus-group-mode

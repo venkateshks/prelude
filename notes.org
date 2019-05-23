@@ -1,0 +1,43 @@
+* Gnus
+** gpg for msmtp
+echo -e "password"| gpg  -vv --encrypt --output ~/.msmtp_file.gpg -r <emailid>
+echo "Hello this is sending email using msmtp " | msmtp "<email id>"
+gpg --generate-key
+
+** Sample msmtprc file which worked
+defaults
+port 587
+tls on
+auth on
+logfile ~/.msmtp.log
+tls_trust_file /etc/ssl/cert.pem
+
+
+account gmail1
+host smtp.gmail.com
+from ****@gmail.com
+user ***@gmail.com
+tls_starttls on
+tls on
+auth on
+port 587
+passwordeval gpg --no-tty -q -d ~/.msmtp.gpg
+
+
+account gmail2
+host smtp.gmail.com
+from ****@gmail.com
+user ****@gmail.com
+tls_starttls on
+tls on
+auth on
+port 587
+passwordeval gpg --no-tty -q -d ~/.msmtp_gmail2.gpg
+
+account default : gmail2
+
+** authinfo.gpg format
+machine gmail1 login <email> password <password> port 993
+machine gmail1 login <email> password <password> port 587
+machine gmail2 login <email2> password <password2> port 983
+machine gmail2 login <email2> password <password2> port 587
